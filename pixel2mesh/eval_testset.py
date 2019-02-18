@@ -6,7 +6,6 @@ from pixel2mesh.cd_dist import nn_distance
 sys.path.append('external')
 from tf_approxmatch import approx_match, match_cost
 
-# Settings
 flags = tf.app.flags
 FLAGS = flags.FLAGS
 flags.DEFINE_string('data_list', 'utils/test_list.txt', 'Data list path.')
@@ -16,7 +15,6 @@ flags.DEFINE_integer('feat_dim', 963, 'Number of units in perceptual feature lay
 flags.DEFINE_integer('coord_dim', 3, 'Number of units in output layer.') 
 flags.DEFINE_float('weight_decay', 5e-6, 'Weight decay for L2 loss.')
 
-# Define placeholders(dict) and model
 num_blocks = 3
 num_supports = 2
 placeholders = {
@@ -43,7 +41,6 @@ def construct_feed_dict(pkl, placeholders):
 	for i in range(1,4):
 		adj = pkl[i][1]
 		edges.append(adj[0])
-
 	feed_dict = dict()
 	feed_dict.update({placeholders['features']: coord})
 	feed_dict.update({placeholders['edges'][i]: edges[i] for i in range(len(edges))})
@@ -58,14 +55,12 @@ def construct_feed_dict(pkl, placeholders):
 def f_score(label, predict, dist_label, dist_pred, threshold):
 	num_label = label.shape[0]
 	num_predict = predict.shape[0]
-
 	f_scores = []
 	for i in range(len(threshold)):
 		num = len(np.where(dist_label <= threshold[i])[0])
 		recall = 100.0 * num / num_label
 		num = len(np.where(dist_pred <= threshold[i])[0])
 		precision = 100.0 * num / num_predict
-
 		f_scores.append((2*precision*recall)/(precision+recall+1e-8))
 	return np.array(f_scores)
 
@@ -96,7 +91,6 @@ model.load(sess)
 pkl = pickle.load(open('utils/ellipsoid/info_ellipsoid.dat', 'rb'))
 feed_dict = construct_feed_dict(pkl, placeholders)
 
-###
 class_name = {'02828884':'bench','03001627':'chair','03636649':'lamp','03691459':'speaker','04090263':'firearm','04379243':'table','04530566':'watercraft','02691156':'plane','02933112':'cabinet','02958343':'car','03211117':'monitor','04256520':'couch','04401088':'cellphone'}
 model_number = {i:0 for i in class_name}
 sum_f = {i:0 for i in class_name}
@@ -110,14 +104,11 @@ for iters in range(train_number):
 	feed_dict.update({placeholders['labels']: label})
 	# Training step
 	predict = sess.run(model.output3, feed_dict=feed_dict)
-
 	label = label[:, :3]
 	d1,i1,d2,i2,emd = sess.run([dist1,idx1,dist2,idx2, emd_dist], feed_dict={xyz1:label,xyz2:predict})
 	cd = np.mean(d1) + np.mean(d2)
-
 	class_id = model_id.split('_')[0]
 	model_number[class_id] += 1.0
-
 	sum_f[class_id] += f_score(label,predict,d1,d2,[0.0001, 0.0002])
 	sum_cd[class_id] += cd # cd is the mean of all distance
 	sum_emd[class_id] += emd[0] # emd is the sum of all distance
