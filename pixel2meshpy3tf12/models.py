@@ -57,7 +57,6 @@ class Model(object):
         unpool_layer = GraphPooling(placeholders=self.placeholders, pool_id=2)
         self.output2_2 = unpool_layer(self.output2)
         self.output3 = self.activations[-1]
-
         # Store model variables for easy access
         variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.name)
         self.vars = {var.name: var for var in variables}

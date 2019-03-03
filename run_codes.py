@@ -17,7 +17,7 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('f', '', 'kernel')
 flags.DEFINE_string('data_list', 'pixel2mesh/hitoshi_utils/train_list.txt', 'Data list path.')
 flags.DEFINE_float('learning_rate', 3e-5, 'Initial learning rate.')
-flags.DEFINE_integer('epochs', 30, 'Number of epochs to train.')
+flags.DEFINE_integer('epochs', 4, 'Number of epochs to train.')
 flags.DEFINE_integer('hidden', 192, 'Number of units in  hidden layer.')
 flags.DEFINE_integer('feat_dim', 963, 'Number of units in perceptual feature layer.')
 flags.DEFINE_integer('coord_dim', 3, 'Number of units in output layer.') 
@@ -88,8 +88,8 @@ for epoch in tqdm(range(FLAGS.epochs)):
         all_loss[iters] = dists
         mean_loss = np.mean(all_loss[np.where(all_loss)])
         if (iters+1) % 32 == 0:
-            print 'Epoch %d, Iteration %d'%(epoch + 1,iters + 1)
-            print 'Mean loss = %f, iter loss = %f, %d'%(mean_loss,dists,data.queue.qsize())
+            print('Epoch %d, Iteration %d'%(epoch + 1,iters + 1))
+            print('Mean loss = %f, iter loss = %f, %d'%(mean_loss,dists,data.queue.qsize()))
     model.save(sess)
     train_loss.write('Epoch %d, loss %f\n'%(epoch+1, mean_loss))
     train_loss.flush()
@@ -98,4 +98,4 @@ end = time.time()
 print("runtime----",end - start)
 pd.DataFrame([{'runtime':end-start}]).to_csv('runtime.csv')
 data.shutdown()
-print 'Training Finished!'
+print('Training Finished!')
