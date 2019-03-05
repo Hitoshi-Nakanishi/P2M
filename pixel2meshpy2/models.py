@@ -1,6 +1,6 @@
 import tflearn
-from pixel2meshpy3tf12.layers import *
-from pixel2meshpy3tf12.losses import *
+from pixel2meshpy2.layers import *
+from pixel2meshpy2.losses import *
 
 flags = tf.app.flags
 FLAGS = flags.FLAGS
